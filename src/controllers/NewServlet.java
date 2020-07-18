@@ -1,7 +1,7 @@
 package controllers;
 
 import java.io.IOException;
-import java.util.List;
+import java.sql.Timestamp;
 
 import javax.persistence.EntityManager;
 import javax.servlet.ServletException;
@@ -14,16 +14,16 @@ import models.Task;
 import utils.DBUtil;
 
 /**
- * Servlet implementation class IndexServlet
+ * Servlet implementation class NewServlet
  */
-@WebServlet("/index")
-public class IndexServlet extends HttpServlet {
+@WebServlet("/new")
+public class NewServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public IndexServlet() {
+    public NewServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -33,13 +33,23 @@ public class IndexServlet extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         EntityManager et=DBUtil.createEntityManager();
+        et.getTransaction().begin();
 
-        List<Task>tasks=et.createNamedQuery("getAllTasks",Task.class)
-                         .getResultList();
-        response.getWriter().append(Integer.valueOf(tasks.size()).toString());
+        Task t=new Task();
+
+        String content ="hello";
+        t.setContent(content);
+
+        Timestamp currentTime=new Timestamp(System.currentTimeMillis());
+        t.setCreated_at(currentTime);
+        t.setUpdated_at(currentTime);
+
+        et.persist(t);
+        et.getTransaction().commit();
+
+        response.getWriter().append(Integer.valueOf(t.getId()).toString());
 
         et.close();
-
 
 
     }
