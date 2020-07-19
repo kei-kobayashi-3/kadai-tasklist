@@ -35,12 +35,19 @@ public class IndexServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         EntityManager em=DBUtil.createEntityManager();
 
+        //set tasks
         List<Task>tasks=em.createNamedQuery("getAllTasks",Task.class)
                          .getResultList();
 
         em.close();
 
         request.setAttribute("tasks", tasks);
+
+        //if "flush" set sessionScope, set this requestScope (remove sessionScope)
+        if(request.getSession().getAttribute("flush")!=null){
+            request.setAttribute("flush",request.getSession().getAttribute("flush"));
+            request.getSession().removeAttribute("flush");
+        }
 
         RequestDispatcher rd=request.getRequestDispatcher("/WEB-INF/views/tasks/index.jsp");
         rd.forward(request, response);

@@ -48,6 +48,7 @@ public class UpdateServlet extends HttpServlet {
 
             em.getTransaction().begin();
             em.getTransaction().commit();
+            request.getSession().setAttribute("flush","更新が完了しました。");
             em.close();
 
             //remove SessionScope
