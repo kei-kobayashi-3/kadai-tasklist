@@ -35,18 +35,21 @@ public class EditServlet extends HttpServlet {
 
         EntityManager em=DBUtil.createEntityManager();
 
+        //get data from database as this id
         Task t=em.find(Task.class,Integer.parseInt(request.getParameter("id")));
         em.close();
 
+        //request scope
         request.setAttribute("task", t);
         request.setAttribute("_token", request.getSession().getId());
 
+        //session scope
         request.getSession().setAttribute("task_id", t.getId());
 
         RequestDispatcher rd=request.getRequestDispatcher("WEB-INF/views/tasks/edit.jsp");
         rd.forward(request, response);
 
-        response.getWriter().append("Served at: ").append(request.getContextPath());
+
     }
 
 }
