@@ -35,13 +35,28 @@ public class IndexServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         EntityManager em=DBUtil.createEntityManager();
 
-        //set tasks
+        //get open page
+        int page=1;
+        try{
+            page=Integer.parseInt(request.getParameter("page"));
+        }catch(NumberFormatException e){}
+
+        //get task order by max import value of task and start index
         List<Task>tasks=em.createNamedQuery("getAllTasks",Task.class)
+                         .setFirstResult(15*(page -1))
+                         .setMaxResults(15)
                          .getResultList();
+
+        // get all value of task
+        long tasks_count=(long)em.createNamedQuery("getTasksCount",Long.class)
+                .getSingleResult();
+
 
         em.close();
 
         request.setAttribute("tasks", tasks);
+        request.setAttribute("tasks_count", tasks_count);  //number of all
+        request.setAttribute("page", page);                //number of pages
 
         //if "flush" set sessionScope, set this requestScope (remove sessionScope)
         if(request.getSession().getAttribute("flush")!=null){
